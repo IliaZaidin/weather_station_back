@@ -1,6 +1,7 @@
 package ilia.weatherstation.controller;
 
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,10 @@ public class ReadingsController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> getOneReading(@PathVariable Long id) {
-        return new ResponseEntity<>(readingService.findById(id), HttpStatus.OK);
+        Optional<Reading> dbReading = readingService.findById(id);
+        if (dbReading.isEmpty())
+            throw new RuntimeException("Reading with id: " + id + " not found");
+        return new ResponseEntity<>(dbReading, HttpStatus.OK);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
